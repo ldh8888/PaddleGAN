@@ -47,7 +47,7 @@ class Wav2LipPredictor(BasePredictor):
         if face_enhancement:
             from ppgan.faceutils.face_enhancement import FaceEnhancement
             self.faceenhancer = FaceEnhancement()
-        makedirs('./temp', exist_ok=True)
+        makedirs('/kaggle/working/temp', exist_ok=True)
 
     def get_smoothened_boxes(self, boxes, T):
         for i in range(len(boxes)):
@@ -89,7 +89,7 @@ class Wav2LipPredictor(BasePredictor):
         for rect, image in zip(predictions, images):
             if rect is None:
                 cv2.imwrite(
-                    'temp/faulty_frame.jpg',
+                    '/kaggle/working/temp/faulty_frame.jpg',
                     image)  # check this frame where the face was not detected.
                 raise ValueError(
                     'Face not detected! Ensure the video contains a face in all the frames.'
@@ -215,10 +215,10 @@ class Wav2LipPredictor(BasePredictor):
         if not audio_seq.endswith('.wav'):
             print('Extracting raw audio...')
             command = 'ffmpeg -y -i {} -strict -2 {}'.format(
-                audio_seq, 'temp/temp.wav')
+                audio_seq, '/kaggle/working/temp/temp.wav')
 
             subprocess.call(command, shell=True)
-            audio_seq = 'temp/temp.wav'
+            audio_seq = '/kaggle/working/temp/temp.wav'
 
         wav = audio.load_wav(audio_seq, 16000)
         mel = audio.melspectrogram(wav)
@@ -260,7 +260,7 @@ class Wav2LipPredictor(BasePredictor):
             if i == 0:
 
                 frame_h, frame_w = full_frames[0].shape[:-1]
-                out = cv2.VideoWriter('temp/result.avi',
+                out = cv2.VideoWriter('/kaggle/working/temp/result.avi',
                                       cv2.VideoWriter_fourcc(*'DIVX'), fps,
                                       (frame_w, frame_h))
 
@@ -286,6 +286,6 @@ class Wav2LipPredictor(BasePredictor):
         out.release()
 
         command = 'ffmpeg -y -i {} -i {} -strict -2 -q:v 1 {}'.format(
-            audio_seq, 'temp/result.avi', outfile)
+            audio_seq, '/kaggle/working/temp/result.avi', outfile)
         subprocess.call(command, shell=platform.system() != 'Windows')
 
